@@ -18,7 +18,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class ContentApiClient
+class ContentApiClient implements ContentApiClientInterface
 {
     use LoggerAwareTrait;
 
@@ -106,7 +106,7 @@ class ContentApiClient
         return $this->serializer->deserialize($content, GetSceneResponse::class, 'json');
     }
 
-    public function getSceneSuggest(GetSceneSuggestRequest $request): GetScenesResponse
+    public function getScenesSuggest(GetSceneSuggestRequest $request): GetScenesResponse
     {
         $this->validator->validate($request);
 
@@ -169,7 +169,7 @@ class ContentApiClient
         return $this->serializer->deserialize($content, PostRatingResponse::class, 'json');
     }
 
-    public function getLandingScenes(GetScenesLandingRequest $request): GetScenesLandingResponse
+    public function getScenesLanding(GetScenesLandingRequest $request): GetScenesLandingResponse
     {
         $this->validator->validate($request);
 
