@@ -10,7 +10,9 @@
         }
     ],
     "autoload": {
-        "Flowly\\Content\\": "src/"
+        "psr-4": {
+            "Flowly\\Content\\": "src/"
+        }
     },
     "require": {
         "psr/log": "^1.1",
