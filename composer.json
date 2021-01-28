@@ -1,5 +1,5 @@
 {
-    "name": "simmcomm/content-api",
+    "name": "simmcomm/content-api-client",
     "description": "Content API client",
     "type": "library",
     "license": "proprietary",
