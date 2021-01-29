@@ -13,6 +13,7 @@ use Flowly\Content\Response\GetSceneResponse;
 use Flowly\Content\Response\GetScenesLandingResponse;
 use Flowly\Content\Response\GetScenesResponse;
 use Flowly\Content\Response\PostRatingResponse;
+use InvalidArgumentException;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\HttpClient;
@@ -71,56 +72,25 @@ class ContentApiClient implements ContentApiClientInterface
     public function getScenes(GetScenesRequest $request): GetScenesResponse
     {
         $this->validator->validate($request);
-
         $uri = $this->getUri('/scenes');
-        $query = $request->toArray();
 
-        $t = microtime(true);
-        $content = $this->http->request('GET', $uri, $this->getClientOptions(['query' => $query]))
-                              ->getContent(false);
-        $this->logger->info(
-            sprintf('ContentApiClient: GET %s', $uri),
-            ['query' => $query, 'benchmark' => sprintf('%.3f', microtime(true) - $t)]
-        );
-
-        return $this->serializer->deserialize($content, GetScenesResponse::class, 'json');
+        return $this->getSceneCommon($request, $uri, GetScenesResponse::class);
     }
 
     public function getScene(GetSceneRequest $request): GetSceneResponse
     {
         $this->validator->validate($request);
-        
         $uri = $this->getUri("/scenes/{$request->getId()}");
-        $query = $request->toArray();
-        
-        $benchmark = microtime(true);
-        $content = $this->http->request('GET', $uri, $this->getClientOptions(['query' => $query]))
-                              ->getContent(true);
-        $this->logger->info(
-            sprintf('ContentApiClient: GET %s', $uri),
-            ['benchmark' => sprintf('%.3f', microtime(true) - $benchmark), 'query' => $query]
-        );
 
-        return $this->serializer->deserialize($content, GetSceneResponse::class, 'json');
+        return $this->getSceneCommon($request, $uri, GetSceneResponse::class);
     }
 
     public function getScenesSuggest(GetSceneSuggestRequest $request): GetScenesResponse
     {
         $this->validator->validate($request);
-
         $uri = $this->getUri("/scenes/{$request->getId()}/suggest");
-        $query = $request->toArray();
 
-        $benchmark = microtime(true);
-        $content = $this->http->request('GET', $uri, $this->getClientOptions(['query' => $query]))
-                              ->getContent(true);
-
-        $this->logger->info(
-            sprintf('ContentApiClient: GET %s', $uri),
-            ['benchmark' => sprintf('%.3f', microtime(true) - $benchmark), 'query' => $query]
-        );
-
-        return $this->serializer->deserialize($content, GetScenesResponse::class, 'json');
+        return $this->getSceneCommon($request, $uri, GetScenesResponse::class);
     }
 
     public function getCategories(): GetCategoriesResponse
@@ -141,7 +111,7 @@ class ContentApiClient implements ContentApiClientInterface
 
         $benchmark = microtime(true);
         $content = $this->http->request('POST', $uri, $this->getClientOptions(['body' => (string) $request->getRating()]))
-                              ->getContent(true);
+                              ->getContent(false);
 
         $this->logger->info(
             sprintf('ContentApiClient: POST %s', $uri),
@@ -157,16 +127,7 @@ class ContentApiClient implements ContentApiClientInterface
 
         $uri = $this->getUri('/scenes/landing');
 
-        $benchmark = microtime(true);
-        $content = $this->http->request('GET', $uri, $this->getClientOptions(['query' => $request->toArray()]))
-                              ->getContent(true);
-
-        $this->logger->info(
-            sprintf('ContentApiClient: GET %s', $uri),
-            ['benchmark' => sprintf('%.3f', microtime(true) - $benchmark)]
-        );
-
-        return $this->serializer->deserialize($content, GetScenesLandingResponse::class, 'json');
+        return $this->getSceneCommon($request, $uri, GetScenesLandingResponse::class);
     }
 
     private function getUri(string $path): string
@@ -177,6 +138,29 @@ class ContentApiClient implements ContentApiClientInterface
         }
 
         return "$endpoint$path";
+    }
+
+    private function getSceneCommon(object $request, string $uri, string $responseType)
+    {
+        if (
+            !$request instanceof GetScenesRequest
+            || !$request instanceof GetSceneRequest
+            || !$request instanceof GetSceneSuggestRequest
+            || !$request instanceof GetScenesLandingRequest
+        ) {
+            throw new InvalidArgumentException(sprintf('Unexpected type %s', get_class($request)));
+        }
+        $query = $request->toArray();
+
+        $benchmark = microtime(true);
+        $content = $this->http->request('GET', $uri, $this->getClientOptions(['query' => $query]))
+                              ->getContent(false);
+        $this->logger->info(
+            sprintf('ContentApiClient: GET %s', $uri),
+            ['benchmark' => sprintf('%.3f', microtime(true) - $benchmark), 'query' => $query]
+        );
+
+        return $this->serializer->deserialize($content, $responseType, 'json');
     }
 
     private function getClientOptions(array $additionalOptions = []): array
@@ -196,7 +180,7 @@ class ContentApiClient implements ContentApiClientInterface
 
         $benchmark = microtime(true);
         $content = $this->http->request('GET', $uri, $this->getClientOptions())
-                              ->getContent(true);
+                              ->getContent(false);
 
         $this->logger->info(
             sprintf('ContentApiClient: GET %s', $uri),
