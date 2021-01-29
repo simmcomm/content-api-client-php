@@ -143,10 +143,10 @@ class ContentApiClient implements ContentApiClientInterface
     private function getSceneCommon(object $request, string $uri, string $responseType)
     {
         if (
-            !$request instanceof GetScenesRequest
-            || !$request instanceof GetSceneRequest
-            || !$request instanceof GetSceneSuggestRequest
-            || !$request instanceof GetScenesLandingRequest
+            !$request instanceof GetScenesRequest &&
+            !$request instanceof GetSceneRequest &&
+            !$request instanceof GetSceneSuggestRequest &&
+            !$request instanceof GetScenesLandingRequest
         ) {
             throw new InvalidArgumentException(sprintf('Unexpected type %s', get_class($request)));
         }
