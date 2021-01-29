@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a7e8cef0dec1c9f28b61486c7ce925d1",
+    "content-hash": "8b9d477bbcb6f0e5cde10be3c97a3642",
     "packages": [
         {
             "name": "psr/container",
@@ -111,16 +111,16 @@
         },
         {
             "name": "simmcomm/content-api-common",
-            "version": "1.2.0",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/simmcomm/content-api-common.git",
-                "reference": "06a4ccb4cc6ee12778f3dfab08d6be509cd30ffe"
+                "reference": "243954d08dc6507d9d1164797a540e1b0fd8ad5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/simmcomm/content-api-common/zipball/06a4ccb4cc6ee12778f3dfab08d6be509cd30ffe",
-                "reference": "06a4ccb4cc6ee12778f3dfab08d6be509cd30ffe",
+                "url": "https://api.github.com/repos/simmcomm/content-api-common/zipball/243954d08dc6507d9d1164797a540e1b0fd8ad5e",
+                "reference": "243954d08dc6507d9d1164797a540e1b0fd8ad5e",
                 "shasum": ""
             },
             "require": {
@@ -148,9 +148,9 @@
             "description": "Common building blocks for content API server and client",
             "support": {
                 "issues": "https://github.com/simmcomm/content-api-common/issues",
-                "source": "https://github.com/simmcomm/content-api-common/tree/1.2.0"
+                "source": "https://github.com/simmcomm/content-api-common/tree/1.3.0"
             },
-            "time": "2021-01-29T12:37:28+00:00"
+            "time": "2021-01-29T12:54:17+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
