@@ -14,7 +14,12 @@ use Flowly\Content\Response\GetScenesResponse;
 use Flowly\Content\Response\PostRatingResponse;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -53,6 +58,15 @@ class ContentApiClient implements ContentApiClientInterface
         $this->setLogger(new NullLogger());
     }
 
+    public static function create(string $access, string $secret): ContentApiClientInterface
+    {
+        $client = HttpClient::create();
+        $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
+        $validator = Validation::createValidator();
+
+        return new ContentApiClient($client, $serializer, $validator, $access, $secret);
+    }
+
     public function getScenes(GetScenesRequest $request): GetScenesResponse
     {
         $this->validator->validate($request);
@@ -69,27 +83,6 @@ class ContentApiClient implements ContentApiClientInterface
         );
 
         return $this->serializer->deserialize($content, GetScenesResponse::class, 'json');
-    }
-
-    private function getUri(string $path): string
-    {
-        $endpoint = self::ENDPOINT;
-        if ($this->dev) {
-            $endpoint = str_replace('api', 'api-staging', self::ENDPOINT);
-        }
-
-        return "$endpoint$path";
-    }
-
-    private function getClientOptions(array $additionalOptions = []): array
-    {
-        return array_merge(
-            [
-                'auth_basic' => $this->access . $this->secret,
-                'headers'    => ['User-Agent' => sprintf('ContentApiClient(%s)', gethostname()), 'Accept' => 'application/json'],
-            ],
-            $additionalOptions
-        );
     }
 
     public function getScene(string $id): GetSceneResponse
@@ -128,22 +121,6 @@ class ContentApiClient implements ContentApiClientInterface
     public function getCategories(): GetCategoriesResponse
     {
         return $this->getMetadata('/categories', GetCategoriesResponse::class);
-    }
-
-    private function getMetadata(string $path, string $type)
-    {
-        $uri = $this->getUri($path);
-
-        $benchmark = microtime(true);
-        $content = $this->http->request('GET', $uri, $this->getClientOptions())
-                              ->getContent(true);
-
-        $this->logger->info(
-            sprintf('ContentApiClient: GET %s', $uri),
-            ['benchmark' => sprintf('%.3f', microtime(true) - $benchmark)]
-        );
-
-        return $this->serializer->deserialize($content, $type, 'json');
     }
 
     public function getActors(): GetActorsResponse
@@ -185,5 +162,42 @@ class ContentApiClient implements ContentApiClientInterface
         );
 
         return $this->serializer->deserialize($content, GetScenesLandingResponse::class, 'json');
+    }
+
+    private function getUri(string $path): string
+    {
+        $endpoint = self::ENDPOINT;
+        if ($this->dev) {
+            $endpoint = str_replace('api', 'api-staging', self::ENDPOINT);
+        }
+
+        return "$endpoint$path";
+    }
+
+    private function getClientOptions(array $additionalOptions = []): array
+    {
+        return array_merge(
+            [
+                'auth_basic' => $this->access . $this->secret,
+                'headers'    => ['User-Agent' => sprintf('ContentApiClient(%s)', gethostname()), 'Accept' => 'application/json'],
+            ],
+            $additionalOptions
+        );
+    }
+
+    private function getMetadata(string $path, string $type)
+    {
+        $uri = $this->getUri($path);
+
+        $benchmark = microtime(true);
+        $content = $this->http->request('GET', $uri, $this->getClientOptions())
+                              ->getContent(true);
+
+        $this->logger->info(
+            sprintf('ContentApiClient: GET %s', $uri),
+            ['benchmark' => sprintf('%.3f', microtime(true) - $benchmark)]
+        );
+
+        return $this->serializer->deserialize($content, $type, 'json');
     }
 }
