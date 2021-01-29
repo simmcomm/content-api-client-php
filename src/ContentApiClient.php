@@ -2,6 +2,7 @@
 
 namespace Flowly\Content;
 
+use Flowly\Content\Request\GetSceneRequest;
 use Flowly\Content\Request\GetScenesLandingRequest;
 use Flowly\Content\Request\GetScenesRequest;
 use Flowly\Content\Request\GetSceneSuggestRequest;
@@ -85,15 +86,19 @@ class ContentApiClient implements ContentApiClientInterface
         return $this->serializer->deserialize($content, GetScenesResponse::class, 'json');
     }
 
-    public function getScene(string $id): GetSceneResponse
+    public function getScene(GetSceneRequest $request): GetSceneResponse
     {
-        $uri = $this->getUri("/scenes/$id");
+        $this->validator->validate($request);
+        
+        $uri = $this->getUri("/scenes/{$request->getId()}");
+        $query = $request->toArray();
+        
         $benchmark = microtime(true);
-        $content = $this->http->request('GET', $uri, $this->getClientOptions())
+        $content = $this->http->request('GET', $uri, $this->getClientOptions(['query' => $query]))
                               ->getContent(true);
         $this->logger->info(
             sprintf('ContentApiClient: GET %s', $uri),
-            ['benchmark' => sprintf('%.3f', microtime(true) - $benchmark)]
+            ['benchmark' => sprintf('%.3f', microtime(true) - $benchmark), 'query' => $query]
         );
 
         return $this->serializer->deserialize($content, GetSceneResponse::class, 'json');

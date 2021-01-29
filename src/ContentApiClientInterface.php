@@ -2,6 +2,7 @@
 
 namespace Flowly\Content;
 
+use Flowly\Content\Request\GetSceneRequest;
 use Flowly\Content\Request\GetScenesLandingRequest;
 use Flowly\Content\Request\GetScenesRequest;
 use Flowly\Content\Request\GetSceneSuggestRequest;
@@ -17,7 +18,7 @@ interface ContentApiClientInterface
 {
     public function getScenes(GetScenesRequest $request): GetScenesResponse;
 
-    public function getScene(string $id): GetSceneResponse;
+    public function getScene(GetSceneRequest $request): GetSceneResponse;
 
     public function getScenesSuggest(GetSceneSuggestRequest $request): GetScenesResponse;
 

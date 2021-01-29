@@ -2,6 +2,7 @@
 
 namespace Flowly\Content;
 
+use Flowly\Content\Request\GetSceneRequest;
 use Flowly\Content\Request\GetScenesLandingRequest;
 use Flowly\Content\Request\GetScenesRequest;
 use Flowly\Content\Request\GetSceneSuggestRequest;
@@ -31,9 +32,9 @@ class CachingContentApiClient implements ContentApiClientInterface
         return $this->cache->get(self::cacheKey($request->toArray()), [$this->client, 'getScenes']);
     }
 
-    public function getScene(string $id): GetSceneResponse
+    public function getScene(GetSceneRequest $request): GetSceneResponse
     {
-        return $this->cache->get(self::cacheKey(['id' => $id]), [$this->client, 'getScene']);
+        return $this->cache->get(self::cacheKey($request->toArray()), [$this->client, 'getScene']);
     }
 
     public function getScenesSuggest(GetSceneSuggestRequest $request): GetScenesResponse
