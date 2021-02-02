@@ -15,12 +15,11 @@ use Symfony\Component\Validator\Validation;
 
 /**
  * @author Ivan Pepelko <ivan.pepelko@gmail.com>
+ * @covers \Flowly\Content\ContentApiClient
  */
 class ContentApiClientTest extends TestCase
 {
-    /**
-     * @covers \Flowly\Content\ContentApiClient::__construct
-     */
+
     public function test__construct(): void
     {
         self::assertInstanceOf(ContentApiClientInterface::class, $this->createClient());
@@ -36,10 +35,6 @@ class ContentApiClientTest extends TestCase
         return new ContentApiClient($httpClient, $serializer, $validator, '', '');
     }
 
-    /**
-     * @covers \Flowly\Content\ContentApiClient::__construct
-     * @covers \Flowly\Content\ContentApiClient::create
-     */
     public function testCreate(): void
     {
         /** @noinspection UnnecessaryAssertionInspection */
@@ -78,8 +73,6 @@ class ContentApiClientTest extends TestCase
 
     /**
      * @dataProvider provideClient
-     * @covers       \Flowly\Content\ContentApiClient::getScenes
-     * @covers       \Flowly\Content\ContentApiClient::getSceneCommon
      *
      * @param ContentApiClientInterface $client
      */

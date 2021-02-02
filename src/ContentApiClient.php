@@ -13,7 +13,6 @@ use Flowly\Content\Response\GetSceneResponse;
 use Flowly\Content\Response\GetScenesLandingResponse;
 use Flowly\Content\Response\GetScenesResponse;
 use Flowly\Content\Response\PostRatingResponse;
-use InvalidArgumentException;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\HttpClient;
@@ -23,6 +22,10 @@ use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ContentApiClient implements ContentApiClientInterface
@@ -140,16 +143,21 @@ class ContentApiClient implements ContentApiClientInterface
         return "$endpoint$path";
     }
 
+    /**
+     * @param GetScenesRequest|GetSceneRequest|GetSceneSuggestRequest|GetScenesLandingRequest $request
+     * @param string                                                                          $uri
+     * @param string                                                                          $responseType
+     *
+     * @return mixed
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     *
+     * @noinspection PhpDocSignatureInspection
+     */
     private function getSceneCommon(object $request, string $uri, string $responseType)
     {
-        if (
-            !$request instanceof GetScenesRequest &&
-            !$request instanceof GetSceneRequest &&
-            !$request instanceof GetSceneSuggestRequest &&
-            !$request instanceof GetScenesLandingRequest
-        ) {
-            throw new InvalidArgumentException(sprintf('Unexpected type %s', get_class($request)));
-        }
         $query = $request->toArray();
 
         $benchmark = microtime(true);
