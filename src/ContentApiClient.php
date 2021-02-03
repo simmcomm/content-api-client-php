@@ -32,7 +32,7 @@ class ContentApiClient implements ContentApiClientInterface
 {
     use LoggerAwareTrait;
 
-    private const ENDPOINT = 'https://api.content.flowly.com';
+    private const ENDPOINT = 'https://api-content.flowly.com';
 
     private HttpClientInterface $http;
 
