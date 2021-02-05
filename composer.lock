@@ -111,22 +111,24 @@
         },
         {
             "name": "simmcomm/content-api-common",
-            "version": "1.4.0",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/simmcomm/content-api-common.git",
-                "reference": "ee217a096ecb8ebddf2a7115fd756b9182172cd1"
+                "reference": "4139105bda2b7334588bca8b9aeae7215b95e12e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/simmcomm/content-api-common/zipball/ee217a096ecb8ebddf2a7115fd756b9182172cd1",
-                "reference": "ee217a096ecb8ebddf2a7115fd756b9182172cd1",
+                "url": "https://api.github.com/repos/simmcomm/content-api-common/zipball/4139105bda2b7334588bca8b9aeae7215b95e12e",
+                "reference": "4139105bda2b7334588bca8b9aeae7215b95e12e",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4 | ^8.0"
             },
             "require-dev": {
+                "doctrine/annotations": "^1.11",
+                "doctrine/cache": "^1.10",
                 "phpunit/phpunit": "^9.5",
                 "symfony/validator": "^5.2"
             },
@@ -149,9 +151,9 @@
             "description": "Common building blocks for content API server and client",
             "support": {
                 "issues": "https://github.com/simmcomm/content-api-common/issues",
-                "source": "https://github.com/simmcomm/content-api-common/tree/1.4.0"
+                "source": "https://github.com/simmcomm/content-api-common/tree/1.5.0"
             },
-            "time": "2021-02-02T13:57:24+00:00"
+            "time": "2021-02-04T16:25:36+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
