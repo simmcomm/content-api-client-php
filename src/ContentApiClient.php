@@ -21,6 +21,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -28,6 +29,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use UnexpectedValueException;
 
 class ContentApiClient implements ContentApiClientInterface
 {
@@ -72,7 +74,10 @@ class ContentApiClient implements ContentApiClientInterface
 
     public function getScenes(GetScenesRequest $request): GetScenesResponse
     {
-        $this->validator->validate($request);
+        if ($exception = $this->validateRequest($request)) {
+            throw $exception;
+        }
+
         $uri = $this->getUri('/scenes');
 
         return $this->getSceneCommon($request, $uri, GetScenesResponse::class);
@@ -80,7 +85,10 @@ class ContentApiClient implements ContentApiClientInterface
 
     public function getScene(GetSceneRequest $request): GetSceneResponse
     {
-        $this->validator->validate($request);
+        if ($exception = $this->validateRequest($request)) {
+            throw $exception;
+        }
+
         $uri = $this->getUri("/scenes/{$request->getId()}");
 
         return $this->getSceneCommon($request, $uri, GetSceneResponse::class);
@@ -88,7 +96,10 @@ class ContentApiClient implements ContentApiClientInterface
 
     public function getScenesSuggest(GetSceneSuggestRequest $request): GetScenesResponse
     {
-        $this->validator->validate($request);
+        if ($exception = $this->validateRequest($request)) {
+            throw $exception;
+        }
+
         $uri = $this->getUri("/scenes/{$request->getId()}/suggest");
 
         return $this->getSceneCommon($request, $uri, GetScenesResponse::class);
@@ -106,7 +117,9 @@ class ContentApiClient implements ContentApiClientInterface
 
     public function submitRating(PostRatingRequest $request): PostRatingResponse
     {
-        $this->validator->validate($request);
+        if ($exception = $this->validateRequest($request)) {
+            throw $exception;
+        }
 
         $uri = $this->getUri("/rating/{$request->getType()}/{$request->getUserId()}/{$request->getContentId()}");
 
@@ -124,11 +137,24 @@ class ContentApiClient implements ContentApiClientInterface
 
     public function getScenesLanding(GetScenesLandingRequest $request): GetScenesLandingResponse
     {
-        $this->validator->validate($request);
+        if ($exception = $this->validateRequest($request)) {
+            throw $exception;
+        }
 
         $uri = $this->getUri('/scenes/landing');
 
         return $this->getSceneCommon($request, $uri, GetScenesLandingResponse::class);
+    }
+
+    private function validateRequest(object $request): ?UnexpectedValueException
+    {
+        /** @var ConstraintViolationInterface $violation */
+        /** @noinspection LoopWhichDoesNotLoopInspection */
+        foreach ($this->validator->validate($request) as $violation) {
+            return new UnexpectedValueException($violation->getMessage());
+        }
+
+        return null;
     }
 
     private function getUri(string $path): string
