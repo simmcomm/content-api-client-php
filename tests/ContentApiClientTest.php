@@ -71,13 +71,9 @@ class ContentApiClientTest extends TestCase
 
     }
 
-    /**
-     * @dataProvider provideClient
-     *
-     * @param ContentApiClientInterface $client
-     */
-    public function testGetScenes(ContentApiClientInterface $client): void
+    public function testGetScenes200(): void
     {
+        $client = $this->createClient();
         $request = new GetScenesRequest();
 
         $response = $client->getScenes($request);
