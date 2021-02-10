@@ -15,15 +15,12 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Flowly\Content\ContentApiClient;
 
-// new instance with factory method
 // $access and $secret are from Flowly app API keys module
-$client = ContentApiClient::create($access, $secret);
+$client = new ContentApiClient($access, $secret);
 
+// it is possible to inject instance of
+// Symfony\Contracts\HttpClient\HttpClientInterface as third parameter for
 // custom initialization
-// $http - instance of Symfony\Contracts\HttpClient\HttpClientInterface
-// $serializer - instance of Symfony\Component\Serializer\SerializerInterface
-// $validator - instance of Symfony\Component\Validator\Validator\ValidatorInterface
-$client = new ContentApiClient($http, $serializer, $validator, $access, $secret);
 
 // all request arguments and responses are mapped to their class
 // mapping classes are located in namespaces Flowly\Content\Request and Flowly\Content\Response

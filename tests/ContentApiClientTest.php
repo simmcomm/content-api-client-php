@@ -26,13 +26,7 @@ class ContentApiClientTest extends TestCase
     {
         $httpClient = new MockHttpClient(new MockResponseLoader());
 
-        return new ContentApiClient($httpClient, '', '');
-    }
-
-    public function testCreate(): void
-    {
-        /** @noinspection UnnecessaryAssertionInspection */
-        self::assertInstanceOf(ContentApiClientInterface::class, ContentApiClient::create('', ''));
+        return new ContentApiClient('', '', $httpClient);
     }
 
     public function testGetScenesLanding()

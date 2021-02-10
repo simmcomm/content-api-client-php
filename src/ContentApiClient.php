@@ -53,9 +53,9 @@ class ContentApiClient implements ContentApiClientInterface
 
     private bool $dev;
 
-    public function __construct(HttpClientInterface $http, string $access, string $secret, bool $dev = false)
+    public function __construct(string $access, string $secret, HttpClientInterface $http = null, bool $dev = false)
     {
-        $this->http = $http;
+        $this->http = $http ?? HttpClient::create();
         $this->access = $access;
         $this->secret = $secret;
         $this->dev = $dev;
@@ -82,13 +82,6 @@ class ContentApiClient implements ContentApiClientInterface
         $objectNormalizer = new ObjectNormalizer(null, null, $propertyAccessor, $propertyInfoExtractor);
 
         return new Serializer([new SceneLinkDenormalizer(), $objectNormalizer, new ArrayDenormalizer()], [new JsonEncoder()]);
-    }
-
-    public static function create(string $access, string $secret): ContentApiClientInterface
-    {
-        $client = HttpClient::create();
-
-        return new ContentApiClient($client, $access, $secret, $secret);
     }
 
     public function getScenes(GetScenesRequest $request): GetScenesResponse
