@@ -21,6 +21,8 @@
     },
     "require": {
         "php": "^7.4 | ^8.0",
+        "doctrine/annotations": "^1.11",
+        "doctrine/cache": "^1.10",
         "psr/log": "^1.1",
         "simmcomm/content-api-common": "^1.5",
         "symfony/http-client": "^5.2",

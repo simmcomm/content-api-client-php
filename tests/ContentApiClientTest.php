@@ -8,10 +8,6 @@ use Flowly\Content\Request\GetScenesRequest;
 use Flowly\Content\Response\Scene;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Validator\Validation;
 
 /**
  * @author Ivan Pepelko <ivan.pepelko@gmail.com>
@@ -29,10 +25,7 @@ class ContentApiClientTest extends TestCase
     {
         $httpClient = new MockHttpClient(new MockResponseLoader());
 
-        $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
-        $validator = Validation::createValidator();
-
-        return new ContentApiClient($httpClient, $serializer, $validator, '', '');
+        return new ContentApiClient($httpClient, '', '', '');
     }
 
     public function testCreate(): void

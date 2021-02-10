@@ -16,6 +16,7 @@ use Flowly\Content\Response\PostRatingResponse;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -48,28 +49,25 @@ class ContentApiClient implements ContentApiClientInterface
 
     public function __construct(
         HttpClientInterface $http,
-        SerializerInterface $serializer,
-        ValidatorInterface $validator,
         string $access,
         string $secret,
         bool $dev = false
     ) {
         $this->http = $http;
-        $this->serializer = $serializer;
-        $this->validator = $validator;
         $this->access = $access;
         $this->secret = $secret;
         $this->dev = $dev;
         $this->setLogger(new NullLogger());
+
+        $this->serializer = new Serializer([new ObjectNormalizer(null, null, null, new PropertyInfoExtractor())], [new JsonEncoder()]);
+        $this->validator = Validation::createValidatorBuilder()->enableAnnotationMapping()->getValidator();
     }
 
     public static function create(string $access, string $secret): ContentApiClientInterface
     {
         $client = HttpClient::create();
-        $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
-        $validator = Validation::createValidator();
 
-        return new ContentApiClient($client, $serializer, $validator, $access, $secret);
+        return new ContentApiClient($client, $access, $secret, $secret);
     }
 
     public function getScenes(GetScenesRequest $request): GetScenesResponse
