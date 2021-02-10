@@ -5,7 +5,7 @@ namespace Flowly\Content\ApiClientTest;
 use Flowly\Content\ContentApiClient;
 use Flowly\Content\ContentApiClientInterface;
 use Flowly\Content\Request\GetScenesRequest;
-use Generator;
+use Flowly\Content\Response\Scene;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -82,11 +82,23 @@ class ContentApiClientTest extends TestCase
         self::assertEquals(500, $response->count);
 
         self::assertCount($request->getLimit(), $response->scenes);
+
+        self::assertContainsOnly(Scene::class, $response->scenes);
     }
 
-    public function provideClient(): Generator
+    public function testGetScenes200Links(): void
     {
-        yield [$this->createClient()];
+        $client = $this->createClient();
+        $request = new GetScenesRequest();
+
+        $response = $client->getScenes($request->setLinks(true));
+
+        self::assertNull($response->error);
+        self::assertEquals(500, $response->count);
+
+        self::assertCount($request->getLimit(), $response->scenes);
+
+        self::assertContainsOnly('string', $response->scenes);
     }
 
 }
