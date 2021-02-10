@@ -16,8 +16,12 @@ use Flowly\Content\Response\PostRatingResponse;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
+use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -49,20 +53,35 @@ class ContentApiClient implements ContentApiClientInterface
 
     private bool $dev;
 
-    public function __construct(
-        HttpClientInterface $http,
-        string $access,
-        string $secret,
-        bool $dev = false
-    ) {
+    public function __construct(HttpClientInterface $http, string $access, string $secret, bool $dev = false)
+    {
         $this->http = $http;
         $this->access = $access;
         $this->secret = $secret;
         $this->dev = $dev;
         $this->setLogger(new NullLogger());
 
-        $this->serializer = new Serializer([new ObjectNormalizer(null, null, null, new PropertyInfoExtractor())], [new JsonEncoder()]);
+        $this->serializer = self::createSerializer();
         $this->validator = Validation::createValidatorBuilder()->enableAnnotationMapping()->getValidator();
+    }
+
+    private static function createSerializer(): Serializer
+    {
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+        $phpDocExtractor = new PhpDocExtractor();
+        $reflectionExtractor = new ReflectionExtractor();
+
+        $propertyInfoExtractor = new PropertyInfoExtractor(
+            [$reflectionExtractor],
+            [$phpDocExtractor, $reflectionExtractor],
+            [$phpDocExtractor],
+            [$reflectionExtractor],
+            [$reflectionExtractor],
+        );
+
+        $objectNormalizer = new ObjectNormalizer(null, null, $propertyAccessor, $propertyInfoExtractor);
+
+        return new Serializer([new SceneLinkDenormalizer(), $objectNormalizer, new ArrayDenormalizer()], [new JsonEncoder()]);
     }
 
     public static function create(string $access, string $secret): ContentApiClientInterface

@@ -12,6 +12,7 @@ use Symfony\Component\HttpClient\MockHttpClient;
 /**
  * @author Ivan Pepelko <ivan.pepelko@gmail.com>
  * @covers \Flowly\Content\ContentApiClient
+ * @covers \Flowly\Content\SceneLinkDenormalizer
  */
 class ContentApiClientTest extends TestCase
 {
@@ -25,7 +26,7 @@ class ContentApiClientTest extends TestCase
     {
         $httpClient = new MockHttpClient(new MockResponseLoader());
 
-        return new ContentApiClient($httpClient, '', '', '');
+        return new ContentApiClient($httpClient, '', '');
     }
 
     public function testCreate(): void
