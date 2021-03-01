@@ -35,6 +35,8 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use UnexpectedValueException;
 
+use const E_USER_DEPRECATED;
+
 class ContentApiClient implements ContentApiClientInterface
 {
     use LoggerAwareTrait;
@@ -53,7 +55,9 @@ class ContentApiClient implements ContentApiClientInterface
 
     private bool $dev;
 
-    public function __construct(string $access, string $secret, HttpClientInterface $http = null, bool $dev = false)
+    private string $portalIdentification;
+
+    public function __construct(string $access, string $secret, ?string $portalIdentification = null, ?HttpClientInterface $http = null, bool $dev = false)
     {
         $this->http = $http ?? HttpClient::create();
         $this->access = $access;
@@ -63,6 +67,19 @@ class ContentApiClient implements ContentApiClientInterface
 
         $this->serializer = self::createSerializer();
         $this->validator = Validation::createValidatorBuilder()->enableAnnotationMapping()->getValidator();
+
+        if ($portalIdentification === null) {
+            @trigger_error('Argument $portalIdentification will be required in next version, value must be set.', E_USER_DEPRECATED);
+        }
+
+        $this->portalIdentification ??= $portalIdentification
+            ?? $_SERVER['SERVER_NAME']
+            ?? sprintf(
+                '%s@%s[%s]',
+                $_SERVER['USER'],
+                gethostname(),
+                $_SERVER['PWD'] . '/' . $_SERVER['SCRIPT_NAME']
+            );
     }
 
     private static function createSerializer(): Serializer
@@ -212,7 +229,11 @@ class ContentApiClient implements ContentApiClientInterface
         return array_merge(
             [
                 'auth_basic' => $this->access . $this->secret,
-                'headers'    => ['User-Agent' => sprintf('ContentApiClient(%s)', gethostname()), 'Accept' => 'application/json'],
+                'headers'    => [
+                    'User-Agent'  => sprintf('ContentApiClient(%s)', gethostname()),
+                    'Accept'      => 'application/json',
+                    'X-Portal-Id' => $this->portalIdentification,
+                ],
             ],
             $additionalOptions
         );
