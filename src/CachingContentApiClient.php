@@ -29,27 +29,27 @@ class CachingContentApiClient implements ContentApiClientInterface
 
     public function getScenes(GetScenesRequest $request): GetScenesResponse
     {
-        return $this->cache->get(self::cacheKey($request->toArray()), [$this->client, 'getScenes']);
+        return $this->cache->get(self::cacheKey($request->toArray()), fn() => $this->getScenes($request));
     }
 
     public function getScene(GetSceneRequest $request): GetSceneResponse
     {
-        return $this->cache->get(self::cacheKey($request->toArray()), [$this->client, 'getScene']);
+        return $this->cache->get(self::cacheKey($request->toArray()), fn() => $this->getScene($request));
     }
 
     public function getScenesSuggest(GetSceneSuggestRequest $request): GetScenesResponse
     {
-        return $this->cache->get(self::cacheKey($request->toArray()), [$this->client, 'getScenesSuggest']);
+        return $this->cache->get(self::cacheKey($request->toArray()), fn() => $this->getScenesSuggest($request));
     }
 
     public function getCategories(): GetCategoriesResponse
     {
-        return $this->cache->get(self::cacheKey(['function' => __FUNCTION__]), [$this->client, 'getCategories']);
+        return $this->cache->get(self::cacheKey(['function' => __FUNCTION__]), fn() => $this->getCategories());
     }
 
     public function getActors(): GetActorsResponse
     {
-        return $this->cache->get(self::cacheKey(['function' => __FUNCTION__]), [$this->client, 'getCategories']);
+        return $this->cache->get(self::cacheKey(['function' => __FUNCTION__]), fn() => $this->getActors());
     }
 
     public function submitRating(PostRatingRequest $request): PostRatingResponse
@@ -59,7 +59,7 @@ class CachingContentApiClient implements ContentApiClientInterface
 
     public function getScenesLanding(GetScenesLandingRequest $request): GetScenesLandingResponse
     {
-        return $this->cache->get(self::cacheKey($request->toArray()), [$this->client, 'getScenesLanding']);
+        return $this->cache->get(self::cacheKey($request->toArray()), fn() => $this->getScenesLanding($request));
     }
 
     private static function cacheKey(array $args): string
