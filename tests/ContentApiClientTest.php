@@ -11,7 +11,6 @@ use Flowly\Content\Response\Descriptor;
 use Flowly\Content\Response\Scene;
 use PHPUnit\Framework\TestCase;
 
-
 /**
  * @author Ivan Pepelko <ivan.pepelko@gmail.com>
  * @covers \Flowly\Content\ContentApiClient
@@ -25,7 +24,6 @@ class ContentApiClientTest extends TestCase
     {
         self::assertInstanceOf(ContentApiClientInterface::class, $this->createClient());
     }
-
 
     public function testGetScenesLanding()
     {
@@ -42,7 +40,6 @@ class ContentApiClientTest extends TestCase
     {
         $client = $this->createClient();
         $request = new GetSceneRequest('9fe133b0-daf3-49ab-a1db-dec10d038458');
-
 
         $response = $client->getScene($request);
 
@@ -65,12 +62,12 @@ class ContentApiClientTest extends TestCase
 
     public function testSubmitRating()
     {
-        // todo
+        self::markTestSkipped('@TODO');
     }
 
     public function testGetScenesSuggest()
     {
-        // todo
+        self::markTestSkipped('@TODO');
     }
 
     public function testGetCategories()
@@ -112,6 +109,5 @@ class ContentApiClientTest extends TestCase
 
         self::assertContainsOnly('string', $response->scenes);
     }
-
 
 }
