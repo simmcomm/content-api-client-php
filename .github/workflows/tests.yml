@@ -1,0 +1,26 @@
+name: Unit Tests
+
+on: [ push ]
+
+jobs:
+  tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php: [ '7.4', '8.0' ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: php-actions/composer@v5
+
+      - name: PHPUnit (php-actions)
+        uses: php-actions/phpunit@v2
+        with:
+          php_extensions: xdebug
+          php_version: "${{ matrix.php }}"
+          args: --coverage-text
+        env:
+          XDEBUG_MODE: coverage
