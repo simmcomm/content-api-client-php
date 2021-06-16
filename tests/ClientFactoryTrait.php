@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Flowly\Content\ApiClientTest;
-
 
 use Flowly\Content\ContentApiClient;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -13,7 +11,9 @@ trait ClientFactoryTrait
     {
         $httpClient = new MockHttpClient(new MockResponseLoader());
 
-        return new ContentApiClient('', '', null, $httpClient);
+        $client = new ContentApiClient('', '', null, $httpClient);
+
+        return $client->setAuthAlias('TESTING');
     }
 
 }
