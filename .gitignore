@@ -1,6 +1,5 @@
 .idea
 *.iml
 /vendor/
-/.phpunit.result.cache
-/.phpunit.cache/
+/*.cache
 composer.lock
