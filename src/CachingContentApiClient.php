@@ -68,4 +68,11 @@ class CachingContentApiClient implements ContentApiClientInterface
 
         return hash('md5', http_build_query($args));
     }
+
+    public function setAuthAlias(string $authAlias): ContentApiClientInterface
+    {
+        $this->client->setAuthAlias($authAlias);
+
+        return $this;
+    }
 }

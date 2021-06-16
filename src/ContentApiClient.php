@@ -57,6 +57,8 @@ class ContentApiClient implements ContentApiClientInterface
 
     private string $portalIdentification;
 
+    protected ?string $authAlias = null;
+
     public function __construct(string $access, string $secret, ?string $portalIdentification = null, ?HttpClientInterface $http = null, bool $dev = false)
     {
         $this->http = $http ?? HttpClient::create();
@@ -81,25 +83,6 @@ class ContentApiClient implements ContentApiClientInterface
                 gethostname(),
                 $_SERVER['PWD'] . '/' . $_SERVER['SCRIPT_NAME']
             );
-    }
-
-    private static function createSerializer(): Serializer
-    {
-        $propertyAccessor = PropertyAccess::createPropertyAccessor();
-        $phpDocExtractor = new PhpDocExtractor();
-        $reflectionExtractor = new ReflectionExtractor();
-
-        $propertyInfoExtractor = new PropertyInfoExtractor(
-            [$reflectionExtractor],
-            [$phpDocExtractor, $reflectionExtractor],
-            [$phpDocExtractor],
-            [$reflectionExtractor],
-            [$reflectionExtractor],
-        );
-
-        $objectNormalizer = new ObjectNormalizer(null, null, $propertyAccessor, $propertyInfoExtractor);
-
-        return new Serializer([new SceneLinkDenormalizer(), $objectNormalizer, new ArrayDenormalizer()], [new JsonEncoder()]);
     }
 
     public function getScenes(GetScenesRequest $request): GetScenesResponse
@@ -176,6 +159,32 @@ class ContentApiClient implements ContentApiClientInterface
         return $this->getSceneCommon($request, $uri, GetScenesLandingResponse::class);
     }
 
+    public function setAuthAlias(string $authAlias): ContentApiClientInterface
+    {
+        $this->authAlias = $authAlias;
+
+        return $this;
+    }
+
+    private static function createSerializer(): Serializer
+    {
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+        $phpDocExtractor = new PhpDocExtractor();
+        $reflectionExtractor = new ReflectionExtractor();
+
+        $propertyInfoExtractor = new PropertyInfoExtractor(
+            [$reflectionExtractor],
+            [$phpDocExtractor, $reflectionExtractor],
+            [$phpDocExtractor],
+            [$reflectionExtractor],
+            [$reflectionExtractor],
+        );
+
+        $objectNormalizer = new ObjectNormalizer(null, null, $propertyAccessor, $propertyInfoExtractor);
+
+        return new Serializer([new SceneLinkDenormalizer(), $objectNormalizer, new ArrayDenormalizer()], [new JsonEncoder()]);
+    }
+
     private function validateRequest(object $request): ?UnexpectedValueException
     {
         /** @var ConstraintViolationInterface $violation */
@@ -227,13 +236,18 @@ class ContentApiClient implements ContentApiClientInterface
 
     private function getClientOptions(array $additionalOptions = []): array
     {
+        if ($this->authAlias === null) {
+            throw new UnexpectedValueException('authAlias must be provided before sending any request (was $client->setAuthAlias() called?).');
+        }
+
         return array_merge(
             [
                 'auth_basic' => $this->access . $this->secret,
-                'headers'    => [
-                    'User-Agent'  => sprintf('ContentApiClient(%s)', gethostname()),
-                    'Accept'      => 'application/json',
+                'headers' => [
+                    'User-Agent' => sprintf('ContentApiClient(%s)', gethostname()),
+                    'Accept' => 'application/json',
                     'X-Portal-Id' => $this->portalIdentification,
+                    'X-Auth-Alias' => $this->authAlias,
                 ],
             ],
             $additionalOptions

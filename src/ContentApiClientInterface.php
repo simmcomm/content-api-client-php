@@ -29,4 +29,6 @@ interface ContentApiClientInterface
     public function submitRating(PostRatingRequest $request): PostRatingResponse;
 
     public function getScenesLanding(GetScenesLandingRequest $request): GetScenesLandingResponse;
+
+    public function setAuthAlias(string $authAlias): ContentApiClientInterface;
 }
