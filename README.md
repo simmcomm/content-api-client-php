@@ -28,6 +28,9 @@ $client = new ContentApiClient($access, $secret);
 
 // public client api
 
+// before sending any request, it is required to set auth alias:
+$client->setAuthAlias('<user uuid or msisdn>');
+
 // used on scene list view
 $client->getScenes();
 
@@ -51,7 +54,7 @@ $client->getScenesLanding();
 
 # Flowly content API
 
-- route endpoint = `'https://api-content.flowly.com'`
+Root endpoint: `'https://api-content.flowly.com'`.
 
 ## GET `/scenes`
 
