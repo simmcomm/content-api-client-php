@@ -73,6 +73,7 @@ class ContentApiClient implements ContentApiClientInterface
         }
 
         $this->portalIdentification ??= $portalIdentification
+            ?? $_SERVER['HTTP_HOST']
             ?? $_SERVER['SERVER_NAME']
             ?? sprintf(
                 '%s@%s[%s]',
