@@ -236,7 +236,7 @@ class ContentApiClient implements ContentApiClientInterface
 
     private function getClientOptions(array $additionalOptions = []): array
     {
-        if ($this->authAlias === null) {
+        if (empty($this->authAlias)) {
             throw new UnexpectedValueException('authAlias must be provided before sending any request (was $client->setAuthAlias() called?).');
         }
 
