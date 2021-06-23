@@ -34,12 +34,15 @@ class CachingContentApiClient implements ContentApiClientInterface
 
     public function getScene(GetSceneRequest $request): GetSceneResponse
     {
-        return $this->cache->get(self::cacheKey([$request->getId(), ...$request->toArray()]), fn () => $this->client->getScene($request));
+        return $this->cache->get(self::cacheKey(array_merge(['id' => $request->getId(), $request->toArray()])), fn () => $this->client->getScene($request));
     }
 
     public function getScenesSuggest(GetSceneSuggestRequest $request): GetScenesResponse
     {
-        return $this->cache->get(self::cacheKey([$request->getId(), ...$request->toArray()]), fn () => $this->client->getScenesSuggest($request));
+        return $this->cache->get(
+            self::cacheKey(array_merge(['id' => $request->getId(), $request->toArray()])),
+            fn () => $this->client->getScenesSuggest($request)
+        );
     }
 
     public function getCategories(): GetCategoriesResponse
