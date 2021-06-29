@@ -34,6 +34,8 @@ class ContentApiClientTest extends TestCase
 
         self::assertNull($response->error);
         self::assertContainsOnly(Block::class, $response->blocks);
+
+        self::assertStringStartsWith('https://content-dn.com/proxy/TESTING', $response->blocks[0]->scenes[0]->videos->full[0]['uri']);
     }
 
     public function testGetScene()
@@ -48,6 +50,8 @@ class ContentApiClientTest extends TestCase
         self::assertInstanceOf(Scene::class, $response->scene);
 
         self::assertEquals('9fe133b0-daf3-49ab-a1db-dec10d038458', $response->scene->id);
+
+        self::assertStringStartsWith('https://content-dn.com/proxy/TESTING', $response->scene->videos->full[0]['uri']);
     }
 
     public function testGetActors()
@@ -93,6 +97,8 @@ class ContentApiClientTest extends TestCase
         self::assertCount($request->getLimit(), $response->scenes);
 
         self::assertContainsOnly(Scene::class, $response->scenes);
+
+        self::assertStringStartsWith('https://content-dn.com/proxy/TESTING', $response->scenes[0]->videos->full[0]['uri']);
     }
 
     public function testGetScenes200Links(): void
