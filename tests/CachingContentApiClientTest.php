@@ -8,7 +8,10 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
  * @author Ivan Pepelko <ivan.pepelko@gmail.com>
+ * @covers \Flowly\Content\ContentApiClient
  * @covers \Flowly\Content\CachingContentApiClient
+ * @covers \Flowly\Content\SceneLinkDenormalizer
+ * @covers \Flowly\Content\ResponseAuthAliasPostProcessor
  */
 class CachingContentApiClientTest extends ContentApiClientTest
 {

@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
  * @author Ivan Pepelko <ivan.pepelko@gmail.com>
  * @covers \Flowly\Content\ContentApiClient
  * @covers \Flowly\Content\SceneLinkDenormalizer
+ * @covers \Flowly\Content\ResponseAuthAliasPostProcessor
  */
 class ContentApiClientTest extends TestCase
 {
