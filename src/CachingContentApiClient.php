@@ -28,6 +28,7 @@ class CachingContentApiClient implements ContentApiClientInterface
         $this->cache = $cache;
         if ($client instanceof ContentApiClient) {
             $client->setAuthAliasPostProcessingEnabled(false);
+            $this->authAlias = $client->getAuthAlias();
         }
         $this->authAliasPostProcessor = new ResponseAuthAliasPostProcessor();
     }

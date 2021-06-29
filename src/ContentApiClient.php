@@ -169,6 +169,11 @@ class ContentApiClient implements ContentApiClientInterface
         return $this;
     }
 
+    public function getAuthAlias(): ?string
+    {
+        return $this->authAlias;
+    }
+
     private static function createSerializer(): Serializer
     {
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
