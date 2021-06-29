@@ -17,31 +17,45 @@ use Symfony\Contracts\Cache\CacheInterface;
 
 class CachingContentApiClient implements ContentApiClientInterface
 {
+    protected ?string $authAlias = null;
     private ContentApiClientInterface $client;
-
     private CacheInterface $cache;
+    private ResponseAuthAliasPostProcessor $authAliasPostProcessor;
 
     public function __construct(ContentApiClientInterface $client, CacheInterface $cache)
     {
         $this->client = $client;
         $this->cache = $cache;
+        if ($client instanceof ContentApiClient) {
+            $client->setAuthAliasPostProcessingEnabled(false);
+        }
+        $this->authAliasPostProcessor = new ResponseAuthAliasPostProcessor();
     }
 
     public function getScenes(GetScenesRequest $request): GetScenesResponse
     {
-        return $this->cache->get(self::cacheKey($request->toArray()), fn () => $this->client->getScenes($request));
+        return $this->authAliasPostProcessor->process(
+            $this->cache->get(self::cacheKey($request->toArray()), fn () => $this->client->getScenes($request)),
+            $this->authAlias
+        );
     }
 
     public function getScene(GetSceneRequest $request): GetSceneResponse
     {
-        return $this->cache->get(self::cacheKey(array_merge(['id' => $request->getId(), $request->toArray()])), fn () => $this->client->getScene($request));
+        return $this->authAliasPostProcessor->process(
+            $this->cache->get(self::cacheKey(array_merge(['id' => $request->getId(), $request->toArray()])), fn () => $this->client->getScene($request)),
+            $this->authAlias
+        );
     }
 
     public function getScenesSuggest(GetSceneSuggestRequest $request): GetScenesResponse
     {
-        return $this->cache->get(
-            self::cacheKey(array_merge(['id' => $request->getId(), $request->toArray()])),
-            fn () => $this->client->getScenesSuggest($request)
+        return $this->authAliasPostProcessor->process(
+            $this->cache->get(
+                self::cacheKey(array_merge(['id' => $request->getId(), $request->toArray()])),
+                fn () => $this->client->getScenesSuggest($request)
+            ),
+            $this->authAlias
         );
     }
 
@@ -62,11 +76,15 @@ class CachingContentApiClient implements ContentApiClientInterface
 
     public function getScenesLanding(GetScenesLandingRequest $request): GetScenesLandingResponse
     {
-        return $this->cache->get(self::cacheKey($request->toArray()), fn () => $this->client->getScenesLanding($request));
+        return $this->authAliasPostProcessor->process(
+            $this->cache->get(self::cacheKey($request->toArray()), fn () => $this->client->getScenesLanding($request)),
+            $this->authAlias
+        );
     }
 
     public function setAuthAlias(string $authAlias): ContentApiClientInterface
     {
+        $this->authAlias = $authAlias;
         $this->client->setAuthAlias($authAlias);
 
         return $this;

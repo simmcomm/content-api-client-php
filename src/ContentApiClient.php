@@ -42,22 +42,16 @@ class ContentApiClient implements ContentApiClientInterface
     use LoggerAwareTrait;
 
     private const ENDPOINT = 'https://api-content.flowly.com';
-
-    private HttpClientInterface $http;
-
-    private SerializerInterface $serializer;
-
-    private ValidatorInterface $validator;
-
-    private string $access;
-
-    private string $secret;
-
-    private bool $dev;
-
-    private string $portalIdentification;
-
     protected ?string $authAlias = null;
+    private HttpClientInterface $http;
+    private SerializerInterface $serializer;
+    private ValidatorInterface $validator;
+    private string $access;
+    private string $secret;
+    private bool $dev;
+    private string $portalIdentification;
+    private ResponseAuthAliasPostProcessor $authAliasPostProcessor;
+    private bool $authAliasPostProcessingEnabled = true;
 
     public function __construct(string $access, string $secret, ?string $portalIdentification = null, ?HttpClientInterface $http = null, bool $dev = false)
     {
@@ -83,6 +77,15 @@ class ContentApiClient implements ContentApiClientInterface
                 gethostname(),
                 $_SERVER['PWD'] . '/' . $_SERVER['SCRIPT_NAME']
             );
+
+        $this->authAliasPostProcessor = new ResponseAuthAliasPostProcessor();
+    }
+
+    public function setAuthAliasPostProcessingEnabled(bool $authAliasPostProcessingEnabled): ContentApiClient
+    {
+        $this->authAliasPostProcessingEnabled = $authAliasPostProcessingEnabled;
+
+        return $this;
     }
 
     public function getScenes(GetScenesRequest $request): GetScenesResponse
@@ -211,7 +214,7 @@ class ContentApiClient implements ContentApiClientInterface
      * @param string                                                                          $uri
      * @param string                                                                          $responseType
      *
-     * @return mixed
+     * @return GetScenesResponse|GetSceneResponse|GetScenesLandingResponse
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
@@ -219,7 +222,7 @@ class ContentApiClient implements ContentApiClientInterface
      *
      * @noinspection PhpDocSignatureInspection
      */
-    private function getSceneCommon(object $request, string $uri, string $responseType)
+    private function getSceneCommon(object $request, string $uri, string $responseType): object
     {
         $query = $request->toArray();
 
@@ -231,7 +234,13 @@ class ContentApiClient implements ContentApiClientInterface
             ['benchmark' => sprintf('%.3f', microtime(true) - $benchmark), 'query' => $query]
         );
 
-        return $this->serializer->deserialize($content, $responseType, 'json');
+        $response = $this->serializer->deserialize($content, $responseType, 'json');
+
+        if ($this->authAliasPostProcessingEnabled) {
+            $this->authAliasPostProcessor->process($response, $this->authAlias);
+        }
+
+        return $response;
     }
 
     private function getClientOptions(array $additionalOptions = []): array
@@ -247,7 +256,6 @@ class ContentApiClient implements ContentApiClientInterface
                     'User-Agent' => sprintf('ContentApiClient(%s)', gethostname()),
                     'Accept' => 'application/json',
                     'X-Portal-Id' => $this->portalIdentification,
-                    'X-Auth-Alias' => $this->authAlias,
                 ],
             ],
             $additionalOptions
