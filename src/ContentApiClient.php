@@ -162,16 +162,16 @@ class ContentApiClient implements ContentApiClientInterface
         return $this->getSceneCommon($request, $uri, GetScenesLandingResponse::class);
     }
 
+    public function getAuthAlias(): ?string
+    {
+        return $this->authAlias;
+    }
+
     public function setAuthAlias(string $authAlias): ContentApiClientInterface
     {
         $this->authAlias = $authAlias;
 
         return $this;
-    }
-
-    public function getAuthAlias(): ?string
-    {
-        return $this->authAlias;
     }
 
     private static function createSerializer(): Serializer
@@ -256,7 +256,7 @@ class ContentApiClient implements ContentApiClientInterface
 
         return array_merge(
             [
-                'auth_basic' => $this->access . $this->secret,
+                'auth_basic' => $this->access . ':' . $this->secret,
                 'headers' => [
                     'User-Agent' => sprintf('ContentApiClient(%s)', gethostname()),
                     'Accept' => 'application/json',
