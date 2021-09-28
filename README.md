@@ -385,6 +385,8 @@ Landing page
 - `licensor: "afsc" = null`
 - `blockSize: int = 25`
     - results per block
+- `blacklistedIncluded: bool = false`
+    - include videos that are blacklisted from landing page responses (requires `simmcomm/content-api-common@^1.6.3`)
 
 ### responses
 
