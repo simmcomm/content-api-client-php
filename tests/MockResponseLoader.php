@@ -17,8 +17,7 @@ class MockResponseLoader
         'https://api-content.flowly.com/scenes/9fe133b0-daf3-49ab-a1db-dec10d038458?imageResolution=1080&videoResolution=1080' => 'getScene_9fe133b0-daf3-49ab-a1db-dec10d038458.json',
         'https://api-content.flowly.com/actors' => 'getActors.json',
         'https://api-content.flowly.com/categories' => 'getCategories.json',
-        'https://api-content.flowly.com/scenes/landing?blockSize=25&orderBy=added&orderDir=desc&links=0&videoResolution=1080&imageResolution=1080' => 'getLanding.json'
-
+        'https://api-content.flowly.com/scenes/landing?blockSize=25&blacklistedIncluded=0&orderBy=added&orderDir=desc&links=0&videoResolution=1080&imageResolution=1080' => 'getLanding.json',
     ];
 
     public function __invoke(string $method, string $url, array $options = []): ResponseInterface
