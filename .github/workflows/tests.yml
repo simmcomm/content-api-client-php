@@ -19,7 +19,7 @@ jobs:
           php_version: "${{ matrix.php }}"
 
       - name: PHPUnit (php-actions)
-        uses: php-actions/phpunit@v3
+        uses: php-actions/phpunit@v9
         with:
           php_extensions: xdebug
           php_version: "${{ matrix.php }}"
