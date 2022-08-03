@@ -239,6 +239,15 @@ class ContentApiClient implements ContentApiClientInterface
             ['benchmark' => sprintf('%.3f', microtime(true) - $benchmark), 'query' => $query]
         );
 
+        // log more data to resolve a bug
+        // $content because it could not be serialized in some instances hoping to record the exact value when it breaks again
+        $this->logger->debug(
+            "ContentApiClient->getScenesCommon()",
+            [
+                "content" => $content
+            ]
+        );
+
         $response = $this->serializer->deserialize($content, $responseType, 'json');
 
         if ($this->authAliasPostProcessingEnabled) {
