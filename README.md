@@ -98,6 +98,8 @@ Root endpoint: `'https://api-content.flowly.com'`.
 - `rating: string = ">=1.0 <=10.0"`
     - content rating filters (see content_rating.md)
     - uses semver-like strings for filtering
+- `search: string = null`
+    - search content descriptions, category and actor names for search term
 
 ### responses
 
