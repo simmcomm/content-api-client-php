@@ -62,7 +62,10 @@ class ContentApiClient implements ContentApiClientInterface
         $this->setLogger(new NullLogger());
 
         $this->serializer = self::createSerializer();
-        $this->validator = Validation::createValidatorBuilder()->enableAnnotationMapping()->getValidator();
+        $this->validator = Validation::createValidatorBuilder()
+            ->addDefaultDoctrineAnnotationReader()
+            ->enableAnnotationMapping(true)
+            ->getValidator();
 
         if ($portalIdentification === null) {
             @trigger_error('Argument $portalIdentification will be required in next version, value must be set.', E_USER_DEPRECATED);
