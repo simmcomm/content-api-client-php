@@ -18,9 +18,13 @@ jobs:
         with:
           php_version: "${{ matrix.php }}"
 
+      - name: Parse PHPUnit version
+        run: echo "PHPUNIT_VERSION=$(composer show phpunit/phpunit --no-interaction --format json | jq -r .versions[0])" >> $GITHUB_ENV
+
       - name: PHPUnit (php-actions)
         uses: php-actions/phpunit@v3
         with:
+          version: ${{ env.PHPUNIT_VERSION }}
           php_extensions: xdebug
           php_version: "${{ matrix.php }}"
           args: --coverage-text
