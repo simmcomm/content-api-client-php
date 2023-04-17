@@ -100,6 +100,13 @@ Root endpoint: `'https://api-content.flowly.com'`.
     - uses semver-like strings for filtering
 - `search: string = null`
     - search content descriptions, category and actor names for search term
+- `language:  string = null`
+    - string is Language Code in ISO 639-1
+    - if translation is found for the language code, the scene description will be in that language
+    - currently supported languages are
+        - de
+        - fr
+        - it
 
 ### responses
 
@@ -222,6 +229,15 @@ If `links==true`
 
 - `id: string`: content id (uuid)
 
+### query
+- `language:  string = null`
+    - string is Language Code in ISO 639-1
+    - if translation is found for the language code, the scene description will be in that language
+    - currently supported languages are
+        - de
+        - fr
+        - it
+
 ### responses
 
 #### Success (HTTP 200)
@@ -264,6 +280,13 @@ Some parameters are same as in `/scenes`, thus same rules are applied.
     - if less than 1, it will return up to `limit` count of rows
 - `limit: int = 25`
     - default value is subject to change
+- `language:  string = null`
+    - string is Language Code in ISO 639-1
+    - currently supported languages are
+    - if translation is found for the language code, the scene description will be in that language
+      - de
+      - fr
+      - it
 
 ### responses
 
@@ -389,6 +412,13 @@ Landing page
     - results per block
 - `blacklistedIncluded: bool = false`
     - include videos that are blacklisted from landing page responses (requires `simmcomm/content-api-common@^1.6.3`)
+- `language:  string = null`
+    - string is Language Code in ISO 639-1
+    - if translation is found for the language code, the scene description will be in that language
+    - currently supported languages are
+        - de
+        - fr
+        - it
 
 ### responses
 
