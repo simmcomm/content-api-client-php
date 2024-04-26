@@ -22,7 +22,7 @@ jobs:
         run: echo "PHPUNIT_VERSION=$(composer show phpunit/phpunit --no-interaction --format json | jq -r .versions[0])" >> $GITHUB_ENV
 
       - name: PHPUnit (php-actions)
-        uses: php-actions/phpunit@v3
+        uses: php-actions/phpunit@v4
         with:
           version: ${{ env.PHPUNIT_VERSION }}
           php_extensions: xdebug
