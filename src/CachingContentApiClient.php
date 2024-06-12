@@ -68,7 +68,7 @@ class CachingContentApiClient implements ContentApiClientInterface
     {
         return $this->authAliasPostProcessor->process(
             $this->cache->get(
-                self::cacheKey(array_merge(['id' => $request->getId(), $request->toArray()])),
+                self::cacheKey(array_merge(['id' => $request->getId()], $request->toArray())),
                 self::wrapCacheCallback(fn() => $this->client->getScene($request)),
             ),
             $this->authAlias,
@@ -79,7 +79,7 @@ class CachingContentApiClient implements ContentApiClientInterface
     {
         return $this->authAliasPostProcessor->process(
             $this->cache->get(
-                self::cacheKey(array_merge(['id' => $request->getId(), $request->toArray()])),
+                self::cacheKey(array_merge(['id' => $request->getId()], $request->toArray())),
                 self::wrapCacheCallback(fn() => $this->client->getScenesSuggest($request)),
             ),
             $this->authAlias,
