@@ -13,13 +13,14 @@ use Flowly\Content\Response\GetSceneResponse;
 use Flowly\Content\Response\GetScenesLandingResponse;
 use Flowly\Content\Response\GetScenesResponse;
 use Flowly\Content\Response\PostRatingResponse;
+use Psr\Cache\CacheItemInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 
 class CachingContentApiClient implements ContentApiClientInterface
 {
-    protected ?string $authAlias = null;
+    protected ?string                 $authAlias = null;
     private ContentApiClientInterface $client;
-    private CacheInterface $cache;
+    private CacheInterface            $cache;
     private ResponseAuthAliasPostProcessor $authAliasPostProcessor;
 
     public function __construct(ContentApiClientInterface $client, CacheInterface $cache)
@@ -33,19 +34,44 @@ class CachingContentApiClient implements ContentApiClientInterface
         $this->authAliasPostProcessor = new ResponseAuthAliasPostProcessor();
     }
 
+    private static function cacheKey(array $args): string
+    {
+        ksort($args);
+
+        return hash('md5', http_build_query($args));
+    }
+
+    private static function wrapCacheCallback(callable $callback): callable
+    {
+        return static function (CacheItemInterface $item, bool &$save) use ($callback) {
+            $result = $callback();
+            if (is_object($result) && property_exists($result, 'error')) {
+                $save = $result->error === null;
+            }
+
+            return $result;
+        };
+    }
+
     public function getScenes(GetScenesRequest $request): GetScenesResponse
     {
         return $this->authAliasPostProcessor->process(
-            $this->cache->get(self::cacheKey($request->toArray()), fn () => $this->client->getScenes($request)),
-            $this->authAlias
+            $this->cache->get(
+                self::cacheKey($request->toArray()),
+                self::wrapCacheCallback(fn() => $this->client->getScenes($request)),
+            ),
+            $this->authAlias,
         );
     }
 
     public function getScene(GetSceneRequest $request): GetSceneResponse
     {
         return $this->authAliasPostProcessor->process(
-            $this->cache->get(self::cacheKey(array_merge(['id' => $request->getId(), $request->toArray()])), fn () => $this->client->getScene($request)),
-            $this->authAlias
+            $this->cache->get(
+                self::cacheKey(array_merge(['id' => $request->getId()], $request->toArray())),
+                self::wrapCacheCallback(fn() => $this->client->getScene($request)),
+            ),
+            $this->authAlias,
         );
     }
 
@@ -53,21 +79,27 @@ class CachingContentApiClient implements ContentApiClientInterface
     {
         return $this->authAliasPostProcessor->process(
             $this->cache->get(
-                self::cacheKey(array_merge(['id' => $request->getId(), $request->toArray()])),
-                fn () => $this->client->getScenesSuggest($request)
+                self::cacheKey(array_merge(['id' => $request->getId()], $request->toArray())),
+                self::wrapCacheCallback(fn() => $this->client->getScenesSuggest($request)),
             ),
-            $this->authAlias
+            $this->authAlias,
         );
     }
 
     public function getCategories(): GetCategoriesResponse
     {
-        return $this->cache->get(self::cacheKey(['function' => __FUNCTION__]), fn () => $this->client->getCategories());
+        return $this->cache->get(
+            self::cacheKey(['function' => __FUNCTION__]),
+            self::wrapCacheCallback(fn() => $this->client->getCategories()),
+        );
     }
 
     public function getActors(): GetActorsResponse
     {
-        return $this->cache->get(self::cacheKey(['function' => __FUNCTION__]), fn () => $this->client->getActors());
+        return $this->cache->get(
+            self::cacheKey(['function' => __FUNCTION__]),
+            self::wrapCacheCallback(fn() => $this->client->getActors()),
+        );
     }
 
     public function submitRating(PostRatingRequest $request): PostRatingResponse
@@ -78,8 +110,11 @@ class CachingContentApiClient implements ContentApiClientInterface
     public function getScenesLanding(GetScenesLandingRequest $request): GetScenesLandingResponse
     {
         return $this->authAliasPostProcessor->process(
-            $this->cache->get(self::cacheKey($request->toArray()), fn () => $this->client->getScenesLanding($request)),
-            $this->authAlias
+            $this->cache->get(
+                self::cacheKey($request->toArray()),
+                self::wrapCacheCallback(fn() => $this->client->getScenesLanding($request)),
+            ),
+            $this->authAlias,
         );
     }
 
@@ -89,12 +124,5 @@ class CachingContentApiClient implements ContentApiClientInterface
         $this->client->setAuthAlias($authAlias);
 
         return $this;
-    }
-
-    private static function cacheKey(array $args): string
-    {
-        ksort($args);
-
-        return hash('md5', http_build_query($args));
     }
 }
