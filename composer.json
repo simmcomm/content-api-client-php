@@ -23,7 +23,7 @@
         "php": "^7.4.0 || ^8.0.0",
         "doctrine/annotations": "^1.11 || ^2.0",
         "doctrine/cache": "^1.10 || ^2.0",
-        "phpdocumentor/reflection-docblock": "^5.2",
+        "phpdocumentor/reflection-docblock": "^5.2 || ^6.0",
         "psr/log": "^1.1 || ^2.0 || ^3.0",
         "simmcomm/content-api-common": "^1.11",
         "symfony/cache": "^5.2 || ^6.0 || ^7.0 || ^8.0",
