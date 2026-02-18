@@ -20,7 +20,7 @@
         }
     },
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^7.4.0 || ^8.0.0",
         "doctrine/annotations": "^1.11 || ^2.0",
         "doctrine/cache": "^1.10 || ^2.0",
         "phpdocumentor/reflection-docblock": "^5.2",
