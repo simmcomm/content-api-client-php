@@ -26,7 +26,7 @@
         "phpdocumentor/reflection-docblock": "^5.2",
         "psr/log": "^1.1 || ^2.0 || ^3.0",
         "simmcomm/content-api-common": "^1.11",
-        "symfony/cache": "^5.2 || ^6.0 || ^7.0",
+        "symfony/cache": "^5.2 || ^6.0 || ^7.0 || ^8.0",
         "symfony/cache-contracts": "^2.2",
         "symfony/http-client": "^5.2 || ^6.0 || ^7.0 || ^8.0",
         "symfony/polyfill-php80": "^1.22",
