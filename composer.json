@@ -30,7 +30,7 @@
         "symfony/cache-contracts": "^2.2",
         "symfony/http-client": "^5.2 || ^6.0 || ^7.0 || ^8.0",
         "symfony/polyfill-php80": "^1.22",
-        "symfony/property-access": "^5.2",
+        "symfony/property-access": "^5.2 || ^6.0",
         "symfony/serializer": "^5.2 || ^6.0",
         "symfony/validator": "^5.2"
     },
